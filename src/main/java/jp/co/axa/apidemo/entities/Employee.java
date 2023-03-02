@@ -3,36 +3,28 @@ package jp.co.axa.apidemo.entities;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+/**
+ * JPA entity representing Employee
+ *
+ */
+@Getter @Setter
 @Entity
 @Table(name="EMPLOYEE")
 public class Employee {
 
-    @Getter
-    @Setter
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
-    @Getter
-    @Setter
-    @Column(name="EMPLOYEE_NAME")
+    @Column(name="EMPLOYEE_NAME", nullable = false)
     private String name;
 
-    @Getter
-    @Setter
-    @Column(name="EMPLOYEE_SALARY")
-    private Integer salary;
+    @Column(name="EMPLOYEE_SALARY", nullable = false)
+    private String salary;
 
-    @Getter
-    @Setter
-    @Column(name="DEPARTMENT")
+    @Column(name="DEPARTMENT", nullable = false)
     private String department;
 
 }

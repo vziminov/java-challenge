@@ -1,54 +1,67 @@
 package jp.co.axa.apidemo.controllers;
 
-import jp.co.axa.apidemo.entities.Employee;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import jp.co.axa.apidemo.dto.EmployeeAddDto;
+import jp.co.axa.apidemo.dto.EmployeeDto;
+import jp.co.axa.apidemo.exceptions.BadRequestApiException;
+import jp.co.axa.apidemo.exceptions.NotFoundApiException;
+import jp.co.axa.apidemo.exceptions.ServerErrorApiException;
 import jp.co.axa.apidemo.services.EmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Api(tags = "Employee")
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/employees")
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
-    public void setEmployeeService(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService) {
+
         this.employeeService = employeeService;
     }
 
-    @GetMapping("/employees")
-    public List<Employee> getEmployees() {
-        List<Employee> employees = employeeService.retrieveEmployees();
-        return employees;
+    @ApiOperation(value = "Get Employees", notes = "Get all Employees data")
+    @GetMapping("/get")
+    public List<EmployeeDto> getEmployees() throws ServerErrorApiException {
+
+        return employeeService.retrieveEmployees();
     }
 
-    @GetMapping("/employees/{employeeId}")
-    public Employee getEmployee(@PathVariable(name="employeeId")Long employeeId) {
+    @ApiOperation(value = "Get Employee", notes = "Get Employee data with specified id")
+    @GetMapping("/get/{employeeId}")
+    public EmployeeDto getEmployee(@ApiParam(name =  "employeeId", value = "Employee id", example = "1", required = true)
+                                   @PathVariable(name="employeeId") Long employeeId)
+            throws NotFoundApiException, ServerErrorApiException, BadRequestApiException {
+
         return employeeService.getEmployee(employeeId);
     }
 
-    @PostMapping("/employees")
-    public void saveEmployee(Employee employee){
-        employeeService.saveEmployee(employee);
-        System.out.println("Employee Saved Successfully");
+    @ApiOperation(value = "Add Employee", notes = "Adds Employee with provided information")
+    @PostMapping("/add")
+    public Long saveEmployee(@RequestBody EmployeeAddDto employee) throws ServerErrorApiException, BadRequestApiException {
+
+        return employeeService.saveEmployee(employee);
     }
 
-    @DeleteMapping("/employees/{employeeId}")
-    public void deleteEmployee(@PathVariable(name="employeeId")Long employeeId){
+    @ApiOperation(value = "Delete Employee", notes = "Deletes Employee with specified id")
+    @DeleteMapping("/delete/{employeeId}")
+    public void deleteEmployee(@ApiParam(name =  "employeeId", value = "Employee id", example = "1", required = true)
+                               @PathVariable(name="employeeId") Long employeeId) throws BadRequestApiException {
+
         employeeService.deleteEmployee(employeeId);
-        System.out.println("Employee Deleted Successfully");
     }
 
-    @PutMapping("/employees/{employeeId}")
-    public void updateEmployee(@RequestBody Employee employee,
-                               @PathVariable(name="employeeId")Long employeeId){
-        Employee emp = employeeService.getEmployee(employeeId);
-        if(emp != null){
-            employeeService.updateEmployee(employee);
-        }
+    @ApiOperation(value = "Update Employee", notes = "Updates Employee with provided information")
+    @PutMapping("/update")
+    public void updateEmployee(@RequestBody EmployeeDto employee) throws NotFoundApiException, ServerErrorApiException,
+            BadRequestApiException {
 
+        employeeService.updateEmployee(employee);
     }
 
 }
